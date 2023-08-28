@@ -70,7 +70,17 @@ class Demo {
 //     }
 // }
 class App {
-    constructor() {
+    static async CreateScene(engine: Engine, canvas: HTMLCanvasElement): Promise<Scene> {
+        const scene = new Scene(engine);
+        await Demo.SetupXR(scene, {
+            uiOptions: {
+                sessionMode: "immersive-ar",
+            },
+        });
+        return scene;
+    }
+
+    static async initialize() {
         // create the canvas html element and attach it to the webpage
         var canvas = document.createElement("canvas");
         canvas.style.width = "100%";
@@ -79,13 +89,20 @@ class App {
         document.body.appendChild(canvas);
 
         // initialize babylon scene and engine
-        var engine = new Engine(canvas, true);
-        var scene = new Scene(engine);
+        const engine = new Engine(canvas, true);
+        const scene = await App.CreateScene(engine, canvas);
 
-        var camera: ArcRotateCamera = new ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, Vector3.Zero(), scene);
+        const camera: ArcRotateCamera = new ArcRotateCamera(
+            "Camera",
+            Math.PI / 2,
+            Math.PI / 2,
+            2,
+            Vector3.Zero(),
+            scene
+        );
         camera.attachControl(canvas, true);
-        var light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
-        var sphere: Mesh = MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
+        const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
+        const sphere: Mesh = MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
 
         // hide/show the Inspector
         window.addEventListener("keydown", (ev) => {
@@ -105,4 +122,4 @@ class App {
         });
     }
 }
-new App();
+App.initialize();
