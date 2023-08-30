@@ -36,16 +36,46 @@ async function initialize() {
     const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
     // const sphere: Mesh = MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
 
-    // 1) load glb file public/valkyrie_mesh.glb
+    scene.createDefaultEnvironment({ createGround: false, createSkybox: false });
+
+    //* 1) load glb file public/valkyrie_mesh.glb
     const root = new TransformNode("root", scene);
     await SceneLoader.ImportMeshAsync("valkyrie_mesh", "", "valkyrie_mesh.glb", scene);
     const model = scene.getMeshByName("valkyrie_mesh");
     model.parent = root;
     root.rotationQuaternion = new Quaternion();
 
+    //* 2) image tracking
+
+    const options: WebXRDefaultExperienceOptions = {
+        uiOptions: {
+            sessionMode: "immersive-ar",
+        },
+    };
+
+    const xr = await scene.createDefaultXRExperienceAsync(options);
+
+    const featuresManager = xr.baseExperience.featuresManager;
+    const imageTracking = featuresManager.enableFeature(WebXRFeatureName.IMAGE_TRACKING, "latest", {
+        images: [
+            {
+                // src: "https://cdn.babylonjs.com/imageTracking.png",
+                src: "imageTracking.png",
+                estimatedRealWorldWidth: 0.2,
+            },
+        ],
+    }) as WebXRImageTracking;
+
+    imageTracking.onTrackedImageUpdatedObservable.add((image) => {
+        // root.setPreTransformMatrix(image.transformationMatrix);
+        image.transformationMatrix.decompose(root.scaling, root.rotationQuaternion, root.position);
+        root.setEnabled(true);
+        root.translate(Axis.Y, 0.1, Space.LOCAL);
+    });
+
     //# start
     // set debug layer
-    setDebugLayerShortcut(scene, true);
+    setDebugLayerShortcut(scene, false);
     // run the main render loop
     engine.runRenderLoop(() => {
         scene.render();
