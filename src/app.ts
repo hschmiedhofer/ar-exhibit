@@ -19,107 +19,82 @@ import {
     WebXRImageTracking,
 } from "@babylonjs/core";
 
-class Demo {
-    static async SetupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Promise<WebXRDefaultExperience> {
-        scene.createDefaultEnvironment({ createGround: false, createSkybox: false });
+async function initialize() {
+    // create the canvas html element and attach it to the webpage
+    const canvas = document.createElement("canvas");
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.id = "gameCanvas";
+    document.body.appendChild(canvas);
 
-        const root = new TransformNode("root", scene);
-        // root.setEnabled(false);
+    // initialize babylon scene and engine
+    const engine = new Engine(canvas, true);
+    const scene = new Scene(engine);
 
-        const model = await SceneLoader.ImportMeshAsync(
-            "",
-            "https://piratejc.github.io/assets/",
-            "valkyrie_mesh.glb",
-            scene
-        );
-        model.meshes[0].parent = root;
-        root.rotationQuaternion = new Quaternion();
+    const camera: ArcRotateCamera = new ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, Vector3.Zero(), scene);
+    camera.attachControl(canvas, true);
+    const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
+    // const sphere: Mesh = MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
 
-        const xr = await scene.createDefaultXRExperienceAsync(options);
+    scene.createDefaultEnvironment({ createGround: false, createSkybox: false });
 
-        const featuresManager = xr.baseExperience.featuresManager;
-        const imageTracking = featuresManager.enableFeature(WebXRFeatureName.IMAGE_TRACKING, "latest", {
-            images: [
-                {
-                    src: "https://cdn.babylonjs.com/imageTracking.png",
-                    estimatedRealWorldWidth: 0.2,
-                },
-            ],
-        }) as WebXRImageTracking;
+    //* 1) load glb file public/valkyrie_mesh.glb
+    const root = new TransformNode("root", scene);
+    await SceneLoader.ImportMeshAsync("valkyrie_mesh", "", "valkyrie_mesh.glb", scene);
+    const model = scene.getMeshByName("valkyrie_mesh");
+    model.parent = root;
+    root.rotationQuaternion = new Quaternion();
 
-        imageTracking.onTrackedImageUpdatedObservable.add((image) => {
-            // root.setPreTransformMatrix(image.transformationMatrix);
-            image.transformationMatrix.decompose(root.scaling, root.rotationQuaternion, root.position);
-            root.setEnabled(true);
-            root.translate(Axis.Y, 0.1, Space.LOCAL);
-        });
+    //* 2) image tracking
 
-        return xr;
-    }
-}
+    const options: WebXRDefaultExperienceOptions = {
+        uiOptions: {
+            sessionMode: "immersive-ar",
+        },
+    };
 
-// class Playground {
-//     public static async CreateScene(engine: Engine, canvas: HTMLCanvasElement): Promise<Scene> {
-//         const scene = new Scene(engine);
-//         await Demo.SetupXR(scene, {
-//             uiOptions: {
-//                 sessionMode: "immersive-ar",
-//             },
-//         });
-//         return scene;
-//     }
-// }
-class App {
-    static async CreateScene(engine: Engine, canvas: HTMLCanvasElement): Promise<Scene> {
-        const scene = new Scene(engine);
-        await Demo.SetupXR(scene, {
-            uiOptions: {
-                sessionMode: "immersive-ar",
+    const xr = await scene.createDefaultXRExperienceAsync(options);
+
+    const featuresManager = xr.baseExperience.featuresManager;
+    const imageTracking = featuresManager.enableFeature(WebXRFeatureName.IMAGE_TRACKING, "latest", {
+        images: [
+            {
+                // src: "https://cdn.babylonjs.com/imageTracking.png",
+                src: "imageTracking.png",
+                estimatedRealWorldWidth: 0.2,
             },
-        });
-        return scene;
-    }
+        ],
+    }) as WebXRImageTracking;
 
-    static async initialize() {
-        // create the canvas html element and attach it to the webpage
-        var canvas = document.createElement("canvas");
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.id = "gameCanvas";
-        document.body.appendChild(canvas);
+    imageTracking.onTrackedImageUpdatedObservable.add((image) => {
+        // root.setPreTransformMatrix(image.transformationMatrix);
+        image.transformationMatrix.decompose(root.scaling, root.rotationQuaternion, root.position);
+        root.setEnabled(true);
+        root.translate(Axis.Y, 0.1, Space.LOCAL);
+    });
 
-        // initialize babylon scene and engine
-        const engine = new Engine(canvas, true);
-        const scene = await App.CreateScene(engine, canvas);
-
-        const camera: ArcRotateCamera = new ArcRotateCamera(
-            "Camera",
-            Math.PI / 2,
-            Math.PI / 2,
-            2,
-            Vector3.Zero(),
-            scene
-        );
-        camera.attachControl(canvas, true);
-        const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
-        const sphere: Mesh = MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
-
-        // hide/show the Inspector
-        window.addEventListener("keydown", (ev) => {
-            // Shift+Ctrl+Alt+I
-            if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
-                if (scene.debugLayer.isVisible()) {
-                    scene.debugLayer.hide();
-                } else {
-                    scene.debugLayer.show();
-                }
-            }
-        });
-
-        // run the main render loop
-        engine.runRenderLoop(() => {
-            scene.render();
-        });
-    }
+    //# start
+    // set debug layer
+    setDebugLayerShortcut(scene, false);
+    // run the main render loop
+    engine.runRenderLoop(() => {
+        scene.render();
+    });
 }
-App.initialize();
+
+function setDebugLayerShortcut(scene: Scene, on: boolean) {
+    // hide/show the Inspector
+    if (on === true) scene.debugLayer.show();
+    window.addEventListener("keydown", (ev) => {
+        // Shift+Ctrl+Alt+I
+        if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
+            if (scene.debugLayer.isVisible()) {
+                scene.debugLayer.hide();
+            } else {
+                scene.debugLayer.show();
+            }
+        }
+    });
+}
+
+initialize();
