@@ -36,16 +36,25 @@ async function initialize() {
     const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
     // const sphere: Mesh = MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
 
-    // load glb file public/valkyrie_mesh.glb
+    // 1) load glb file public/valkyrie_mesh.glb
     const root = new TransformNode("root", scene);
-    // root.setEnabled(false);
-    SceneLoader.ImportMesh("", "", "valkyrie_mesh.glb", scene, (meshes) => {
-        meshes.forEach((mesh) => {
-            mesh.parent = root;
-        });
-    });
+    await SceneLoader.ImportMeshAsync("valkyrie_mesh", "", "valkyrie_mesh.glb", scene);
+    const model = scene.getMeshByName("valkyrie_mesh");
+    model.parent = root;
+    root.rotationQuaternion = new Quaternion();
 
+    //# start
+    // set debug layer
+    setDebugLayerShortcut(scene, true);
+    // run the main render loop
+    engine.runRenderLoop(() => {
+        scene.render();
+    });
+}
+
+function setDebugLayerShortcut(scene: Scene, on: boolean) {
     // hide/show the Inspector
+    if (on === true) scene.debugLayer.show();
     window.addEventListener("keydown", (ev) => {
         // Shift+Ctrl+Alt+I
         if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
@@ -55,11 +64,6 @@ async function initialize() {
                 scene.debugLayer.show();
             }
         }
-    });
-
-    // run the main render loop
-    engine.runRenderLoop(() => {
-        scene.render();
     });
 }
 
