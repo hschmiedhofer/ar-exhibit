@@ -22,6 +22,7 @@ async function setupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Pr
 
     const model = await SceneLoader.ImportMeshAsync("", "", "painting-002.glb", scene);
     model.meshes[0].parent = root;
+    model.meshes[1].parent = root;
     root.rotationQuaternion = new Quaternion();
 
     const xr = await scene.createDefaultXRExperienceAsync(options);
@@ -90,7 +91,7 @@ async function start() {
 
     //# start
     // set debug layer
-    setDebugLayerShortcut(scene, false);
+    // setDebugLayerShortcut(scene, false);
     // run the main render loop
     engine.runRenderLoop(() => {
         scene.render();
