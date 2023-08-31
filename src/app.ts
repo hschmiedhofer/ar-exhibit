@@ -20,16 +20,15 @@ async function setupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Pr
     const root = new TransformNode("root", scene);
     // root.setEnabled(false);
 
-    // const model = await SceneLoader.ImportMeshAsync("", "", "valkyrie_mesh.glb", scene);
-    // model.meshes[0].parent = root;
+    const model = await SceneLoader.ImportMeshAsync("", "", "valkyrie_mesh.glb", scene);
+    model.meshes[0].parent = root;
 
-    const result = await SceneLoader.ImportMeshAsync("valkyrie_mesh", "", "valkyrie_mesh.glb", scene);
-    console.log(result);
+    // const result = await SceneLoader.ImportMeshAsync("valkyrie_mesh", "", "valkyrie_mesh.glb", scene);
+    // console.log(result);
+    // const model = scene.getMeshByName("valkyrie_mesh");
+    // console.log(model);
 
-    const model = scene.getMeshByName("valkyrie_mesh");
-    console.log(model);
-
-    model.parent = root;
+    // model.parent = root;
 
     root.rotationQuaternion = new Quaternion();
 
