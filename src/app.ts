@@ -32,7 +32,7 @@ async function setupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Pr
             {
                 // src: "https://cdn.babylonjs.com/imageTracking.png",
                 src: "qr_hschmiedhofer.png",
-                estimatedRealWorldWidth: 0.2,
+                estimatedRealWorldWidth: 0.15,
             },
         ],
     }) as WebXRImageTracking;
