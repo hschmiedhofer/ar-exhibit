@@ -22,14 +22,6 @@ async function setupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Pr
 
     const model = await SceneLoader.ImportMeshAsync("", "", "valkyrie_mesh.glb", scene);
     model.meshes[0].parent = root;
-
-    // const result = await SceneLoader.ImportMeshAsync("valkyrie_mesh", "", "valkyrie_mesh.glb", scene);
-    // console.log(result);
-    // const model = scene.getMeshByName("valkyrie_mesh");
-    // console.log(model);
-
-    // model.parent = root;
-
     root.rotationQuaternion = new Quaternion();
 
     const xr = await scene.createDefaultXRExperienceAsync(options);
@@ -55,16 +47,28 @@ async function setupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Pr
     return xr;
 }
 
-async function createScene(canvas: HTMLCanvasElement): Promise<Scene> {
-    const engine = new Engine(canvas, true);
-
-    const scene = new Scene(engine);
+async function init(scene: Scene): Promise<Scene> {
     await setupXR(scene, {
         uiOptions: {
             sessionMode: "immersive-ar",
         },
     });
     return scene;
+}
+
+function setDebugLayerShortcut(scene: Scene, on: boolean) {
+    // hide/show the Inspector
+    if (on === true) scene.debugLayer.show();
+    window.addEventListener("keydown", (ev) => {
+        // Shift+Ctrl+Alt+I
+        if (ev.shiftKey && ev.ctrlKey && ev.altKey && ev.keyCode === 73) {
+            if (scene.debugLayer.isVisible()) {
+                scene.debugLayer.hide();
+            } else {
+                scene.debugLayer.show();
+            }
+        }
+    });
 }
 
 async function start() {
@@ -75,9 +79,22 @@ async function start() {
     canvas.id = "gameCanvas";
     document.body.appendChild(canvas);
 
+    const engine = new Engine(canvas, true);
+
+    const scene = new Scene(engine);
+
     // initialize babylon scene and engine
-    const scene = await createScene(canvas);
-    console.log("scene created");
+    await init(scene);
+
+    console.log("scene initialized");
+
+    //# start
+    // set debug layer
+    setDebugLayerShortcut(scene, false);
+    // run the main render loop
+    engine.runRenderLoop(() => {
+        scene.render();
+    });
 }
 
 start();
