@@ -20,7 +20,7 @@ async function setupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Pr
     const root = new TransformNode("root", scene);
     // root.setEnabled(false);
 
-    const model = await SceneLoader.ImportMeshAsync("", "", "valkyrie_mesh.glb", scene);
+    const model = await SceneLoader.ImportMeshAsync("", "", "painting-001.glb", scene);
     model.meshes[0].parent = root;
     root.rotationQuaternion = new Quaternion();
 
