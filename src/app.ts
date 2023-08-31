@@ -20,7 +20,7 @@ async function setupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Pr
     const root = new TransformNode("root", scene);
     // root.setEnabled(false);
 
-    const model = await SceneLoader.ImportMeshAsync("", "", "painting-001.glb", scene);
+    const model = await SceneLoader.ImportMeshAsync("", "", "painting-002.glb", scene);
     model.meshes[0].parent = root;
     root.rotationQuaternion = new Quaternion();
 
@@ -32,7 +32,7 @@ async function setupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Pr
             {
                 // src: "https://cdn.babylonjs.com/imageTracking.png",
                 src: "qr_hschmiedhofer.png",
-                estimatedRealWorldWidth: 0.5,
+                estimatedRealWorldWidth: 0.15,
             },
         ],
     }) as WebXRImageTracking;
