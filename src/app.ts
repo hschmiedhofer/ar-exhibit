@@ -56,15 +56,21 @@ async function initialize() {
     const xr = await scene.createDefaultXRExperienceAsync(options);
 
     const featuresManager = xr.baseExperience.featuresManager;
-    const imageTracking = featuresManager.enableFeature(WebXRFeatureName.IMAGE_TRACKING, "latest", {
-        images: [
-            {
-                // src: "https://cdn.babylonjs.com/imageTracking.png",
-                src: "imageTracking.png",
-                estimatedRealWorldWidth: 0.2,
-            },
-        ],
-    }) as WebXRImageTracking;
+    const imageTracking = featuresManager.enableFeature(
+        WebXRFeatureName.IMAGE_TRACKING,
+        "latest",
+        {
+            images: [
+                {
+                    // src: "https://cdn.babylonjs.com/imageTracking.png",
+                    src: "imageTracking.png",
+                    estimatedRealWorldWidth: 0.2,
+                },
+            ],
+        },
+        undefined,
+        true
+    ) as WebXRImageTracking;
 
     imageTracking.onTrackedImageUpdatedObservable.add((image) => {
         // root.setPreTransformMatrix(image.transformationMatrix);
