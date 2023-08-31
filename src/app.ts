@@ -1,12 +1,16 @@
 import "@babylonjs/core/Debug/debugLayer";
 import {
+    ArcRotateCamera,
     Axis,
     Engine,
+    HemisphericLight,
+    MeshBuilder,
     Quaternion,
     Scene,
     SceneLoader,
     Space,
     TransformNode,
+    Vector3,
     WebXRDefaultExperience,
     WebXRDefaultExperienceOptions,
     WebXRFeatureName,
@@ -18,7 +22,7 @@ async function setupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Pr
     scene.createDefaultEnvironment({ createGround: false, createSkybox: false });
 
     const root = new TransformNode("root", scene);
-    // root.setEnabled(false);
+    root.setEnabled(true);
 
     const model = await SceneLoader.ImportMeshAsync("", "", "painting-002.glb", scene);
     model.meshes[0].parent = root;
@@ -72,6 +76,14 @@ function setDebugLayerShortcut(scene: Scene, on: boolean) {
     });
 }
 
+function setupStandardScene(canvas: HTMLCanvasElement, scene: Scene) {
+    const camera: ArcRotateCamera = new ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, Vector3.Zero(), scene);
+    camera.attachControl(canvas, true);
+    const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
+
+    // MeshBuilder.CreateBox("box", { size: 0.3 }, scene);
+}
+
 async function start() {
     // create the canvas html element and attach it to the webpage
     const canvas = document.createElement("canvas");
@@ -83,6 +95,7 @@ async function start() {
     const engine = new Engine(canvas, true);
 
     const scene = new Scene(engine);
+    setupStandardScene(canvas, scene);
 
     // initialize babylon scene and engine
     await init(scene);
