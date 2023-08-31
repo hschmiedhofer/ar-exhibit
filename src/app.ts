@@ -38,7 +38,8 @@ async function setupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Pr
     const imageTracking = featuresManager.enableFeature(WebXRFeatureName.IMAGE_TRACKING, "latest", {
         images: [
             {
-                src: "https://cdn.babylonjs.com/imageTracking.png",
+                // src: "https://cdn.babylonjs.com/imageTracking.png",
+                src: "imageTracking.png",
                 estimatedRealWorldWidth: 0.2,
             },
         ],
