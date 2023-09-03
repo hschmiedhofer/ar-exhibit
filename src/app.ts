@@ -20,7 +20,12 @@ import {
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 
-async function setupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Promise<WebXRDefaultExperience> {
+async function setupXR(scene: Scene): Promise<WebXRDefaultExperience> {
+    const options: WebXRDefaultExperienceOptions = {
+        uiOptions: {
+            sessionMode: "immersive-ar",
+        },
+    };
     scene.createDefaultEnvironment({ createGround: false, createSkybox: false });
 
     const root = new TransformNode("root", scene);
@@ -54,14 +59,14 @@ async function setupXR(scene: Scene, options: WebXRDefaultExperienceOptions): Pr
     return xr;
 }
 
-async function init(scene: Scene): Promise<Scene> {
-    await setupXR(scene, {
-        uiOptions: {
-            sessionMode: "immersive-ar",
-        },
-    });
-    return scene;
-}
+// async function init(scene: Scene): Promise<Scene> {
+//     await setupXR(scene, {
+//         uiOptions: {
+//             sessionMode: "immersive-ar",
+//         },
+//     });
+//     return scene;
+// }
 
 function setDebugLayerShortcut(scene: Scene, on: boolean) {
     // hide/show the Inspector
@@ -112,7 +117,7 @@ async function start() {
     setDebugLayerShortcut(scene, false);
 
     // initialize babylon scene and engine
-    await init(scene);
+    await setupXR(scene);
 
     console.log("scene initialized");
 
