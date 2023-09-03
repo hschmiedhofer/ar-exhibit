@@ -93,6 +93,7 @@ function setupStandardScene(canvas: HTMLCanvasElement, scene: Scene) {
         Vector3.Zero(),
         scene
     );
+
     camera.wheelPrecision = 100;
     camera.lowerRadiusLimit = 2;
     // const camera = new FreeCamera("freeCam", new Vector3(0, 3, 0), scene, true);
@@ -100,6 +101,7 @@ function setupStandardScene(canvas: HTMLCanvasElement, scene: Scene) {
     const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
 
     // MeshBuilder.CreateBox("box", { size: 0.3 }, scene);
+    MeshBuilder.CreateBox("box", { width: 0.6, depth: 0.4, height: 0.1 });
 }
 
 async function start() {
