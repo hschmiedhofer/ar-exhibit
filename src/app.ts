@@ -1,4 +1,5 @@
 import "@babylonjs/core/Debug/debugLayer";
+import "@babylonjs/inspector";
 import {
     ArcRotateCamera,
     Axis,
@@ -112,14 +113,14 @@ async function start() {
     const engine = new Engine(canvas, true);
     const scene = new Scene(engine);
 
+    // setup camera and other stuff
     setupStandardScene(canvas, scene);
-    // set debug layer
-    setDebugLayerShortcut(scene, false);
 
     // initialize babylon scene and engine
     await setupXR(scene);
 
-    console.log("scene initialized");
+    // set debug layer
+    setDebugLayerShortcut(scene, false);
 
     //# start
     // run the main render loop
