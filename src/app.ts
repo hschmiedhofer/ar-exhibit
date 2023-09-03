@@ -3,12 +3,14 @@ import {
     ArcRotateCamera,
     Axis,
     Engine,
+    FreeCamera,
     HemisphericLight,
     MeshBuilder,
     Quaternion,
     Scene,
     SceneLoader,
     Space,
+    Tools,
     TransformNode,
     Vector3,
     WebXRDefaultExperience,
@@ -77,7 +79,17 @@ function setDebugLayerShortcut(scene: Scene, on: boolean) {
 }
 
 function setupStandardScene(canvas: HTMLCanvasElement, scene: Scene) {
-    const camera: ArcRotateCamera = new ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, Vector3.Zero(), scene);
+    const camera: ArcRotateCamera = new ArcRotateCamera(
+        "Camera",
+        Tools.ToRadians(270),
+        Tools.ToRadians(0),
+        4,
+        Vector3.Zero(),
+        scene
+    );
+    camera.wheelPrecision = 100;
+    camera.lowerRadiusLimit = 2;
+    // const camera = new FreeCamera("freeCam", new Vector3(0, 3, 0), scene, true);
     camera.attachControl(canvas, true);
     const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
 
@@ -93,9 +105,11 @@ async function start() {
     document.body.appendChild(canvas);
 
     const engine = new Engine(canvas, true);
-
     const scene = new Scene(engine);
+
     setupStandardScene(canvas, scene);
+    // set debug layer
+    setDebugLayerShortcut(scene, false);
 
     // initialize babylon scene and engine
     await init(scene);
@@ -103,8 +117,6 @@ async function start() {
     console.log("scene initialized");
 
     //# start
-    // set debug layer
-    // setDebugLayerShortcut(scene, false);
     // run the main render loop
     engine.runRenderLoop(() => {
         scene.render();
