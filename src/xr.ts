@@ -46,14 +46,14 @@ export async function setupXR(
     });
 
     // const shadowCatcher = MeshBuilder.CreatePlane("shadowcatcher", { size: 5 }, scene);
-    const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 5, depth: 3, height: 0.01 }, scene);
-    // var ground = BABYLON.Mesh.CreatePlane('ground', 1000, scene)
-    // ground.rotation.x = Math.PI / 2
-    shadowCatcher.material = new ShadowOnlyMaterial("shadowOnly", scene);
+    // const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 5, depth: 3, height: 0.01 }, scene);
+    var ground = MeshBuilder.CreatePlane("ground", { size: 4 }, scene);
+    ground.rotation.x = Math.PI / 2;
+    ground.material = new ShadowOnlyMaterial("shadowOnly", scene);
     // shadowCatcher.material = new StandardMaterial("test", scene);
     // (shadowCatcher.material as StandardMaterial).diffuseColor = Color3.Green();
-    shadowCatcher.receiveShadows = true;
-    shadowCatcher.parent = root;
+    ground.receiveShadows = true;
+    ground.parent = root;
 
     root.rotationQuaternion = new Quaternion();
 
