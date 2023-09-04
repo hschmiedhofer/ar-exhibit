@@ -14,39 +14,48 @@ async function start() {
     canvas.id = "gameCanvas";
     document.body.appendChild(canvas);
 
-    // const overlayDiv = document.createElement("div");
-    // overlayDiv.className = "dom-overlay-container";
-    // overlayDiv.innerText = "Status: Tracking..."; // example status message
-    // overlayDiv.style.position = "absolute";
-    // overlayDiv.style.bottom = "10px";
-    // overlayDiv.style.left = "10px";
-    // overlayDiv.style.padding = "10px";
-    // overlayDiv.style.backgroundColor = "rgba(255, 255, 255, 0.8)"; // semi-transparent background
-    // overlayDiv.style.borderRadius = "5px";
-    // document.body.appendChild(overlayDiv);
+    // Create the main container div
+    const domOverlayContainer = document.createElement("div");
+    domOverlayContainer.className = "dom-overlay-container";
+    domOverlayContainer.style.position = "absolute";
+    domOverlayContainer.style.bottom = "10px";
+    domOverlayContainer.style.left = "10px";
+    domOverlayContainer.style.padding = "15px";
+    domOverlayContainer.style.backgroundColor = "rgba(255, 255, 255, 0.8)"; // semi-transparent white
+    domOverlayContainer.style.borderRadius = "12px";
+    domOverlayContainer.style.display = "flex";
+    domOverlayContainer.style.flexDirection = "column";
+    domOverlayContainer.style.gap = "10px";
 
+    // Create a text element
+    const statusText = document.createElement("p");
+    statusText.innerText = "Status: AR mode active";
+    statusText.style.margin = "0";
+
+    // Create the swap button
     const swapButton = document.createElement("button");
     swapButton.innerText = "Swap Model";
-    swapButton.style.position = "absolute";
-    swapButton.style.top = "10px";
-    swapButton.style.left = "10px";
-    swapButton.style.width = "150px"; // Set width of the button
-    swapButton.style.height = "50px"; // Set height of the button
-    swapButton.style.fontSize = "18px"; // Set font size for the button's text
-    swapButton.style.backgroundColor = "#4CAF50"; // Set background color
-    swapButton.style.color = "white"; // Set text color
-    swapButton.style.border = "none"; // Remove border
-    swapButton.style.cursor = "pointer"; // Change cursor to pointer on hover
-    swapButton.style.borderRadius = "12px"; // Round the button corners
+    swapButton.style.width = "150px";
+    swapButton.style.height = "50px";
+    swapButton.style.fontSize = "18px";
+    swapButton.style.backgroundColor = "#4CAF50";
+    swapButton.style.color = "white";
+    swapButton.style.border = "none";
+    swapButton.style.cursor = "pointer";
+    swapButton.style.borderRadius = "12px";
     swapButton.addEventListener("mouseover", function () {
-        // Change background color on hover
         swapButton.style.backgroundColor = "#45a049";
     });
     swapButton.addEventListener("mouseout", function () {
-        // Revert background color when not hovering
         swapButton.style.backgroundColor = "#4CAF50";
     });
-    document.body.appendChild(swapButton);
+
+    // Append text and button to the container
+    domOverlayContainer.appendChild(statusText);
+    domOverlayContainer.appendChild(swapButton);
+
+    // Append the main container to the body
+    document.body.appendChild(domOverlayContainer);
 
     const engine = new Engine(canvas, true);
     const scene = new Scene(engine);
