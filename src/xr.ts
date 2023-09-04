@@ -10,7 +10,13 @@ import {
     Axis,
     Space,
     WebXRDomOverlay,
+    ShadowGenerator,
+    WebXRLightEstimation,
+    MeshBuilder,
+    StandardMaterial,
+    Color3,
 } from "@babylonjs/core";
+import { ShadowOnlyMaterial } from "@babylonjs/materials";
 
 export async function setupXR(
     scene: Scene,
@@ -38,6 +44,17 @@ export async function setupXR(
             m.isVisible = false;
         }
     });
+
+    // const shadowCatcher = MeshBuilder.CreatePlane("shadowcatcher", { size: 5 }, scene);
+    const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 5, depth: 3, height: 0.01 }, scene);
+    // var ground = BABYLON.Mesh.CreatePlane('ground', 1000, scene)
+    // ground.rotation.x = Math.PI / 2
+    // shadowCatcher.material = new ShadowOnlyMaterial("shadowOnly", scene);
+    shadowCatcher.material = new StandardMaterial("test", scene);
+    (shadowCatcher.material as StandardMaterial).diffuseColor = Color3.Green();
+    shadowCatcher.receiveShadows = true;
+    shadowCatcher.parent = root;
+
     root.rotationQuaternion = new Quaternion();
 
     //* create default experience helper
@@ -68,8 +85,14 @@ export async function setupXR(
     //# add light estimation
     const lightEstimationFeature = featuresManager.enableFeature(WebXRFeatureName.LIGHT_ESTIMATION, "latest", {
         createDirectionalLightSource: true,
-        disableCubeMapReflection: false,
-        setSceneEnvironmentTexture: true,
-    });
+        // disableCubeMapReflection: false,
+        // setSceneEnvironmentTexture: true,
+    }) as WebXRLightEstimation;
+
+    const shadowGenerator = new ShadowGenerator(512, lightEstimationFeature.directionalLight);
+    shadowGenerator.useBlurExponentialShadowMap = true;
+    shadowGenerator.setDarkness(0.1);
+    shadowGenerator.getShadowMap().renderList.push(scene.getMeshByName("frame"));
+
     return defaultXrExperienceHelper;
 }

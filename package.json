@@ -14,5 +14,8 @@
     "@babylonjs/loaders": "6.18.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
+  },
+  "dependencies": {
+    "@babylonjs/materials": "^6.19.1"
   }
 }
