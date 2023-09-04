@@ -65,5 +65,11 @@ export async function setupXR(
     //# add DOM overlay
     featuresManager.enableFeature(WebXRDomOverlay, "latest", { element: ".dom-overlay-container" });
 
+    //# add light estimation
+    const lightEstimationFeature = featuresManager.enableFeature(WebXRFeatureName.LIGHT_ESTIMATION, "latest", {
+        createDirectionalLightSource: true,
+        disableCubeMapReflection: false,
+        setSceneEnvironmentTexture: true,
+    });
     return defaultXrExperienceHelper;
 }
