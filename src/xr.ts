@@ -49,9 +49,9 @@ export async function setupXR(
     const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 5, depth: 3, height: 0.01 }, scene);
     // var ground = BABYLON.Mesh.CreatePlane('ground', 1000, scene)
     // ground.rotation.x = Math.PI / 2
-    // shadowCatcher.material = new ShadowOnlyMaterial("shadowOnly", scene);
-    shadowCatcher.material = new StandardMaterial("test", scene);
-    (shadowCatcher.material as StandardMaterial).diffuseColor = Color3.Green();
+    shadowCatcher.material = new ShadowOnlyMaterial("shadowOnly", scene);
+    // shadowCatcher.material = new StandardMaterial("test", scene);
+    // (shadowCatcher.material as StandardMaterial).diffuseColor = Color3.Green();
     shadowCatcher.receiveShadows = true;
     shadowCatcher.parent = root;
 
