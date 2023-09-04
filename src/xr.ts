@@ -12,7 +12,11 @@ import {
     WebXRDomOverlay,
 } from "@babylonjs/core";
 
-export async function setupXR(scene: Scene): Promise<WebXRDefaultExperience> {
+export async function setupXR(
+    scene: Scene,
+    filenameGlb: string,
+    filenameTrackingImage: string
+): Promise<WebXRDefaultExperience> {
     const options: WebXRDefaultExperienceOptions = {
         uiOptions: {
             sessionMode: "immersive-ar",
@@ -23,7 +27,7 @@ export async function setupXR(scene: Scene): Promise<WebXRDefaultExperience> {
     const root = new TransformNode("root", scene);
     root.setEnabled(true);
 
-    const model = await SceneLoader.ImportMeshAsync("", "", "painting-004.glb", scene);
+    const model = await SceneLoader.ImportMeshAsync("", "", filenameGlb, scene);
 
     model.meshes.forEach((m) => {
         if (m.name === "frame") m.parent = root;
@@ -31,7 +35,6 @@ export async function setupXR(scene: Scene): Promise<WebXRDefaultExperience> {
         if (m.name === "painting") m.dispose(true, true);
     });
 
-    // model.meshes[1].parent = root; //todo necessary?
     root.rotationQuaternion = new Quaternion();
 
     const xr = await scene.createDefaultXRExperienceAsync(options);
@@ -40,7 +43,7 @@ export async function setupXR(scene: Scene): Promise<WebXRDefaultExperience> {
     const imageTracking = featuresManager.enableFeature(WebXRFeatureName.IMAGE_TRACKING, "latest", {
         images: [
             {
-                src: "qr_hschmiedhofer.png",
+                src: filenameTrackingImage,
                 estimatedRealWorldWidth: 0.15,
             },
         ],
