@@ -14,22 +14,22 @@ async function start() {
     canvas.id = "gameCanvas";
     document.body.appendChild(canvas);
 
-    const overlayDiv = document.createElement("div");
-    overlayDiv.className = "dom-overlay-container";
-    overlayDiv.innerText = "Status: Tracking..."; // example status message
-    overlayDiv.style.position = "absolute";
-    overlayDiv.style.bottom = "10px";
-    overlayDiv.style.left = "10px";
-    overlayDiv.style.padding = "10px";
-    overlayDiv.style.backgroundColor = "rgba(255, 255, 255, 0.8)"; // semi-transparent background
-    overlayDiv.style.borderRadius = "5px";
-    document.body.appendChild(overlayDiv);
+    // const overlayDiv = document.createElement("div");
+    // overlayDiv.className = "dom-overlay-container";
+    // overlayDiv.innerText = "Status: Tracking..."; // example status message
+    // overlayDiv.style.position = "absolute";
+    // overlayDiv.style.bottom = "10px";
+    // overlayDiv.style.left = "10px";
+    // overlayDiv.style.padding = "10px";
+    // overlayDiv.style.backgroundColor = "rgba(255, 255, 255, 0.8)"; // semi-transparent background
+    // overlayDiv.style.borderRadius = "5px";
+    // document.body.appendChild(overlayDiv);
 
     const swapButton = document.createElement("button");
     swapButton.innerText = "Swap Model";
-    swapButton.style.position = "fixed";
+    swapButton.style.position = "absolute";
     swapButton.style.top = "10px";
-    swapButton.style.right = "10px";
+    swapButton.style.left = "10px";
     swapButton.style.width = "150px"; // Set width of the button
     swapButton.style.height = "50px"; // Set height of the button
     swapButton.style.fontSize = "18px"; // Set font size for the button's text
