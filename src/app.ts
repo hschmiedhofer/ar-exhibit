@@ -71,7 +71,7 @@ async function start() {
     setupStandardScene(canvas, scene);
 
     // initialize babylon scene and engine
-    await setupXR(scene, "painting-004.glb", "qr_hschmiedhofer.png");
+    await setupXR(scene, "painting-005.glb", "qr_hschmiedhofer.png");
 
     // set debug layer
     setDebugLayerShortcut(scene, false);
