@@ -35,9 +35,14 @@ async function setupXR(scene: Scene): Promise<WebXRDefaultExperience> {
     const root = new TransformNode("root", scene);
     root.setEnabled(true);
 
-    const model = await SceneLoader.ImportMeshAsync("", "", "painting-003.glb", scene);
-    model.meshes[1].parent = root;
-    model.meshes[2].parent = root;
+    const model = await SceneLoader.ImportMeshAsync("", "", "painting-004.glb", scene);
+
+    model.meshes.forEach((m) => {
+        if (m.name === "frame") m.parent = root;
+        if (m.name === "mirror") m.parent = root;
+        if (m.name === "painting") m.dispose(true, true);
+    });
+
     // model.meshes[1].parent = root; //todo necessary?
     root.rotationQuaternion = new Quaternion();
 
