@@ -3,14 +3,17 @@ import "@babylonjs/inspector";
 import {
     ArcRotateCamera,
     Axis,
+    Color3,
     Engine,
     FreeCamera,
     HemisphericLight,
+    Material,
     MeshBuilder,
     Quaternion,
     Scene,
     SceneLoader,
     Space,
+    StandardMaterial,
     Tools,
     TransformNode,
     Vector3,
@@ -27,14 +30,15 @@ async function setupXR(scene: Scene): Promise<WebXRDefaultExperience> {
             sessionMode: "immersive-ar",
         },
     };
-    scene.createDefaultEnvironment({ createGround: false, createSkybox: false });
+    const env = scene.createDefaultEnvironment({ createGround: false, createSkybox: false });
 
     const root = new TransformNode("root", scene);
     root.setEnabled(true);
 
     const model = await SceneLoader.ImportMeshAsync("", "", "painting-003.glb", scene);
-    model.meshes[0].parent = root;
     model.meshes[1].parent = root;
+    model.meshes[2].parent = root;
+    // model.meshes[1].parent = root; //todo necessary?
     root.rotationQuaternion = new Quaternion();
 
     const xr = await scene.createDefaultXRExperienceAsync(options);
@@ -59,15 +63,6 @@ async function setupXR(scene: Scene): Promise<WebXRDefaultExperience> {
 
     return xr;
 }
-
-// async function init(scene: Scene): Promise<Scene> {
-//     await setupXR(scene, {
-//         uiOptions: {
-//             sessionMode: "immersive-ar",
-//         },
-//     });
-//     return scene;
-// }
 
 function setDebugLayerShortcut(scene: Scene, on: boolean) {
     // hide/show the Inspector
@@ -96,12 +91,12 @@ function setupStandardScene(canvas: HTMLCanvasElement, scene: Scene) {
 
     camera.wheelPrecision = 100;
     camera.lowerRadiusLimit = 2;
-    // const camera = new FreeCamera("freeCam", new Vector3(0, 3, 0), scene, true);
     camera.attachControl(canvas, true);
+
     const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
 
     // MeshBuilder.CreateBox("box", { size: 0.3 }, scene);
-    MeshBuilder.CreateBox("box", { width: 0.6, depth: 0.4, height: 0.1 });
+    const box = MeshBuilder.CreateBox("box", { width: 0.6, depth: 0.4, height: 0.1 });
 }
 
 async function start() {
