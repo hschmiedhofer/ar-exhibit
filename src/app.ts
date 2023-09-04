@@ -19,6 +19,7 @@ import {
     Vector3,
     WebXRDefaultExperience,
     WebXRDefaultExperienceOptions,
+    WebXRDomOverlay,
     WebXRFeatureName,
     WebXRImageTracking,
 } from "@babylonjs/core";
@@ -52,7 +53,6 @@ async function setupXR(scene: Scene): Promise<WebXRDefaultExperience> {
     const imageTracking = featuresManager.enableFeature(WebXRFeatureName.IMAGE_TRACKING, "latest", {
         images: [
             {
-                // src: "https://cdn.babylonjs.com/imageTracking.png",
                 src: "qr_hschmiedhofer.png",
                 estimatedRealWorldWidth: 0.15,
             },
@@ -65,6 +65,8 @@ async function setupXR(scene: Scene): Promise<WebXRDefaultExperience> {
         root.setEnabled(true);
         root.translate(Axis.Y, 0.1, Space.LOCAL);
     });
+
+    featuresManager.enableFeature(WebXRDomOverlay, "latest", { element: ".dom-overlay-container" });
 
     return xr;
 }
@@ -111,6 +113,17 @@ async function start() {
     canvas.style.height = "100%";
     canvas.id = "gameCanvas";
     document.body.appendChild(canvas);
+
+    const overlayDiv = document.createElement("div");
+    overlayDiv.className = "dom-overlay-container";
+    overlayDiv.innerText = "Status: Tracking..."; // example status message
+    overlayDiv.style.position = "absolute";
+    overlayDiv.style.bottom = "10px";
+    overlayDiv.style.left = "10px";
+    overlayDiv.style.padding = "10px";
+    overlayDiv.style.backgroundColor = "rgba(255, 255, 255, 0.8)"; // semi-transparent background
+    overlayDiv.style.borderRadius = "5px";
+    document.body.appendChild(overlayDiv);
 
     const engine = new Engine(canvas, true);
     const scene = new Scene(engine);
