@@ -31,8 +31,12 @@ export async function setupXR(
     const model = await SceneLoader.ImportMeshAsync("", "", filenameGlb, scene);
     model.meshes.forEach((m) => {
         if (m.name === "frame") m.parent = root;
-        if (m.name === "mirror") m.parent = root;
-        if (m.name === "painting") m.dispose(true, true);
+        // if (m.name === "painting") m.dispose(true, true);
+        if (m.name === "painting") m.parent = root;
+        if (m.name === "mirror") {
+            m.parent = root;
+            m.isVisible = false;
+        }
     });
     root.rotationQuaternion = new Quaternion();
 

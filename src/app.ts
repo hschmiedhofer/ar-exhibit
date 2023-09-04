@@ -50,6 +50,13 @@ async function start() {
         swapButton.style.backgroundColor = "#4CAF50";
     });
 
+    swapButton.addEventListener("click", function () {
+        const mirror = scene.getMeshByName("mirror");
+        const painting = scene.getMeshByName("painting");
+        mirror.isVisible = !mirror.isVisible;
+        painting.isVisible = !painting.isVisible;
+    });
+
     // Append text and button to the container
     domOverlayContainer.appendChild(statusText);
     domOverlayContainer.appendChild(swapButton);
