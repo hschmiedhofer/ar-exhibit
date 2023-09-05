@@ -70,7 +70,7 @@ export async function setupXR(
     const featDomOverlay: WebXRDomOverlay = addDomOverlayFeature(featuresManager, domOverlayClass);
 
     //# add light estimation
-    const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager);
+    // const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager);
 
     //# install shadow system
     addShadowSystem(scene, root);
@@ -113,10 +113,14 @@ function addShadowSystem(scene: Scene, rootNode: TransformNode) {
     const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 2, depth: 1.5, height: 0.01 }, scene);
     shadowCatcher.parent = rootNode;
 
+    // create and apply shadow catcher material
+    const shadowCatcherMaterial = new ShadowOnlyMaterial("shadowOnlyMat", scene);
+    shadowCatcher.material = shadowCatcherMaterial;
+
     // make light source a shadow generator
-    const sg = new ShadowGenerator(1024, directionalLight);
+    const sg = new ShadowGenerator(512, directionalLight);
     sg.useBlurExponentialShadowMap = true;
-    sg.setDarkness(0.01);
+    sg.setDarkness(0.7);
 
     // ad shadow casters to shadow generator / light source
     sg.addShadowCaster(frame);
