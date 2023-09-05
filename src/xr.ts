@@ -56,6 +56,7 @@ export async function setupXR(
             m.parent = root;
             m.isVisible = false;
             m.scaling = new Vector3(10, 10, 10);
+            m.position.z = 3;
         }
     });
 
