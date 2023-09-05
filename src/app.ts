@@ -71,7 +71,7 @@ async function start() {
     setupStandardScene(canvas, scene);
 
     // initialize babylon scene and engine
-    await setupXR(scene, "painting-005.glb", "qr_hschmiedhofer.png", 0.15, ".dom-overlay-container");
+    await setupXR(scene, "painting-005.glb", "qr_hschmiedhofer_002.png", 0.18, ".dom-overlay-container");
 
     // set debug layer
     setDebugLayerShortcut(scene, false);
