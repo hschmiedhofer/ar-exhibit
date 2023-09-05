@@ -14,8 +14,8 @@ export function setupStandardScene(canvas: HTMLCanvasElement, scene: Scene) {
     camera.lowerRadiusLimit = 2;
     camera.attachControl(canvas, true);
 
-    const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
+    // const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
 
     // MeshBuilder.CreateBox("box", { size: 0.3 }, scene);
-    const box = MeshBuilder.CreateBox("box", { width: 0.6, depth: 0.4, height: 0.1 });
+    // const box = MeshBuilder.CreateBox("box", { width: 0.6, depth: 0.4, height: 0.1 });
 }

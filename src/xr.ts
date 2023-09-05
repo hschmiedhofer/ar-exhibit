@@ -15,13 +15,18 @@ import {
     MeshBuilder,
     StandardMaterial,
     Color3,
+    DirectionalLight,
+    Vector3,
+    WebXRFeaturesManager,
 } from "@babylonjs/core";
 import { ShadowOnlyMaterial } from "@babylonjs/materials";
 
 export async function setupXR(
     scene: Scene,
     filenameGlb: string,
-    filenameTrackingImage: string
+    filenameTrackingImage: string,
+    widthTrackingImage: number,
+    domOverlayClass: string
 ): Promise<WebXRDefaultExperience> {
     const options: WebXRDefaultExperienceOptions = {
         uiOptions: {
@@ -45,15 +50,23 @@ export async function setupXR(
         }
     });
 
+    //! add shadowcatcher
     // const shadowCatcher = MeshBuilder.CreatePlane("shadowcatcher", { size: 5 }, scene);
-    // const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 5, depth: 3, height: 0.01 }, scene);
-    var ground = MeshBuilder.CreatePlane("ground", { size: 4 }, scene);
-    ground.rotation.x = Math.PI / 2;
-    ground.material = new ShadowOnlyMaterial("shadowOnly", scene);
-    // shadowCatcher.material = new StandardMaterial("test", scene);
-    // (shadowCatcher.material as StandardMaterial).diffuseColor = Color3.Green();
-    ground.receiveShadows = true;
-    ground.parent = root;
+    const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 5, depth: 3, height: 0.01 }, scene);
+    // const shadowCatcher = MeshBuilder.CreatePlane("ground", { size: 4 }, scene);
+    // shadowCatcher.rotation.x = Math.PI / 2;
+    // shadowCatcher.material = new ShadowOnlyMaterial("shadowOnly", scene);
+    shadowCatcher.material = new StandardMaterial("test", scene);
+    (shadowCatcher.material as StandardMaterial).diffuseColor = Color3.Green();
+    shadowCatcher.receiveShadows = true;
+    shadowCatcher.parent = root;
+
+    //! add test light
+    const directionalLight = new DirectionalLight("dirLight", new Vector3(1, -1, 1), scene);
+    const sg = new ShadowGenerator(512, directionalLight);
+    sg.addShadowCaster(scene.getMeshByName("frame"));
+
+    directionalLight.parent = root;
 
     root.rotationQuaternion = new Quaternion();
 
@@ -64,35 +77,62 @@ export async function setupXR(
     const featuresManager = defaultXrExperienceHelper.baseExperience.featuresManager;
 
     //# add and setup image tracking
-    const imageTracking = featuresManager.enableFeature(WebXRFeatureName.IMAGE_TRACKING, "latest", {
-        images: [
-            {
-                src: filenameTrackingImage,
-                estimatedRealWorldWidth: 0.15,
-            },
-        ],
-    }) as WebXRImageTracking;
-    imageTracking.onTrackedImageUpdatedObservable.add((image) => {
-        // root.setPreTransformMatrix(image.transformationMatrix);
-        image.transformationMatrix.decompose(root.scaling, root.rotationQuaternion, root.position);
-        root.setEnabled(true);
-        root.translate(Axis.Y, 0.1, Space.LOCAL);
-    });
+    const imageTrackingFeature: WebXRImageTracking = addImageTrackingFeature(
+        featuresManager,
+        filenameTrackingImage,
+        widthTrackingImage,
+        root
+    );
 
     //# add DOM overlay
-    featuresManager.enableFeature(WebXRDomOverlay, "latest", { element: ".dom-overlay-container" });
+    const featDomOverlay: WebXRDomOverlay = addDomOverlayFeature(featuresManager, domOverlayClass);
 
     //# add light estimation
-    const lightEstimationFeature = featuresManager.enableFeature(WebXRFeatureName.LIGHT_ESTIMATION, "latest", {
+    const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager, scene);
+
+    return defaultXrExperienceHelper;
+}
+
+function addDomOverlayFeature(featuresManager: WebXRFeaturesManager, element: string): WebXRDomOverlay {
+    return featuresManager.enableFeature(WebXRDomOverlay, "latest", { element: element }) as WebXRDomOverlay;
+}
+
+function addLightEstimationFeature(featuresManager: WebXRFeaturesManager, scene: Scene): WebXRLightEstimation {
+    const feature = featuresManager.enableFeature(WebXRFeatureName.LIGHT_ESTIMATION, "latest", {
         createDirectionalLightSource: true,
         // disableCubeMapReflection: false,
         // setSceneEnvironmentTexture: true,
     }) as WebXRLightEstimation;
 
-    const shadowGenerator = new ShadowGenerator(512, lightEstimationFeature.directionalLight);
+    const shadowGenerator = new ShadowGenerator(512, feature.directionalLight);
     shadowGenerator.useBlurExponentialShadowMap = true;
     shadowGenerator.setDarkness(0.1);
     shadowGenerator.getShadowMap().renderList.push(scene.getMeshByName("frame"));
 
-    return defaultXrExperienceHelper;
+    return feature;
+}
+
+function addImageTrackingFeature(
+    featuresManager: WebXRFeaturesManager,
+    trackingImage: string,
+    estimatedWidth: number,
+    rootNode: TransformNode
+): WebXRImageTracking {
+    const feature = featuresManager.enableFeature(WebXRFeatureName.IMAGE_TRACKING, "latest", {
+        images: [
+            {
+                src: trackingImage,
+                estimatedRealWorldWidth: estimatedWidth,
+            },
+        ],
+    }) as WebXRImageTracking;
+
+    feature.onTrackedImageUpdatedObservable.add((image) => {
+        // root.setPreTransformMatrix(image.transformationMatrix);
+        image.transformationMatrix.decompose(rootNode.scaling, rootNode.rotationQuaternion, rootNode.position);
+        rootNode.setEnabled(true);
+        rootNode.translate(Axis.Y, 0.1, Space.LOCAL);
+    });
+
+    return feature;
 }
