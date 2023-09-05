@@ -128,7 +128,7 @@ function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEstimationF
     sg.useBlurExponentialShadowMap = true;
     // sg.enableSoftTransparentShadow = true;
     // sg.usePoissonSampling = true;
-    sg.setDarkness(0.8);
+    sg.setDarkness(0.6);
 
     // ad shadow casters to shadow generator / light source
     sg.addShadowCaster(frame);
