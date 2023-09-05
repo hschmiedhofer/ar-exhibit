@@ -120,7 +120,7 @@ function addShadowSystem(scene: Scene, rootNode: TransformNode) {
     // make light source a shadow generator
     const sg = new ShadowGenerator(512, directionalLight);
     sg.useBlurExponentialShadowMap = true;
-    sg.setDarkness(0.7);
+    // sg.setDarkness(0.7);
 
     // ad shadow casters to shadow generator / light source
     sg.addShadowCaster(frame);
