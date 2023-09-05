@@ -53,10 +53,10 @@ export async function setupXR(
     const model2 = await SceneLoader.ImportMeshAsync("", "", "spaceship.glb", scene);
     model2.meshes.forEach((m) => {
         if (m.name === "valkyrie_mesh") {
+            m.position.y = 3;
             m.parent = root;
             m.isVisible = false;
             m.scaling = new Vector3(10, 10, 10);
-            m.position.z = 3;
         }
     });
 
