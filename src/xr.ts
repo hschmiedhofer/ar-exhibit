@@ -70,10 +70,10 @@ export async function setupXR(
     const featDomOverlay: WebXRDomOverlay = addDomOverlayFeature(featuresManager, domOverlayClass);
 
     //# add light estimation
-    const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager);
+    // const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager);
 
     //# install shadow system
-    addShadowSystem(scene, root, lightEstimationFeature);
+    addShadowSystem(scene, root);
 
     return defaultXrExperienceHelper;
 }
@@ -82,7 +82,7 @@ function addDomOverlayFeature(featuresManager: WebXRFeaturesManager, element: st
     return featuresManager.enableFeature(WebXRDomOverlay, "latest", { element: element }) as WebXRDomOverlay;
 }
 
-function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEstimationFeature: WebXRLightEstimation) {
+function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEstimationFeature?: WebXRLightEstimation) {
     // const shadowGenerator = new ShadowGenerator(512, feature.directionalLight);
     // shadowGenerator.useBlurExponentialShadowMap = true;
     // shadowGenerator.setDarkness(0.1);
@@ -101,10 +101,6 @@ function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEstimationF
 
     // //! add test light
 
-    // create light source
-    // const directionalLight = new DirectionalLight("dirLight", new Vector3(1, -1, -1), scene);
-    // directionalLight.parent = rootNode;
-
     // get meshes that cast shadows
     const frame = scene.getMeshByName("frame");
     console.log(frame);
@@ -118,7 +114,17 @@ function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEstimationF
     shadowCatcher.material = shadowCatcherMaterial;
 
     // make light source a shadow generator
-    const sg = new ShadowGenerator(1024, lightEstimationFeature.directionalLight);
+
+    let directionalLight;
+    if (!lightEstimationFeature) {
+        // create light source
+        directionalLight = new DirectionalLight("dirLight", new Vector3(1, -1, -1), scene);
+        directionalLight.parent = rootNode;
+    } else {
+        directionalLight = lightEstimationFeature.directionalLight;
+    }
+
+    const sg = new ShadowGenerator(1024, directionalLight);
     sg.useBlurExponentialShadowMap = true;
     // sg.setDarkness(0.7);
 
