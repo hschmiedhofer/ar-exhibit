@@ -51,10 +51,12 @@ async function start() {
     });
 
     swapButton.addEventListener("click", function () {
-        const mirror = scene.getMeshByName("mirror");
         const painting = scene.getMeshByName("painting");
-        mirror.isVisible = !mirror.isVisible;
+        const frame = scene.getMeshByName("frame");
+        const spaceship = scene.getMeshByName("valkyrie_mesh");
         painting.isVisible = !painting.isVisible;
+        frame.isVisible = !frame.isVisible;
+        spaceship.isVisible = !spaceship.isVisible;
     });
 
     // Append text and button to the container

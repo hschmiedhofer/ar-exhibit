@@ -50,6 +50,15 @@ export async function setupXR(
         }
     });
 
+    const model2 = await SceneLoader.ImportMeshAsync("", "", "spaceship.glb", scene);
+    model2.meshes.forEach((m) => {
+        if (m.name === "valkyrie_mesh") {
+            m.parent = root;
+            m.isVisible = false;
+            m.scaling = new Vector3(10, 10, 10);
+        }
+    });
+
     root.rotationQuaternion = new Quaternion();
 
     //* create default experience helper
