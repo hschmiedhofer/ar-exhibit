@@ -50,24 +50,6 @@ export async function setupXR(
         }
     });
 
-    //! add shadowcatcher
-    // const shadowCatcher = MeshBuilder.CreatePlane("shadowcatcher", { size: 5 }, scene);
-    const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 5, depth: 3, height: 0.01 }, scene);
-    // const shadowCatcher = MeshBuilder.CreatePlane("ground", { size: 4 }, scene);
-    // shadowCatcher.rotation.x = Math.PI / 2;
-    // shadowCatcher.material = new ShadowOnlyMaterial("shadowOnly", scene);
-    shadowCatcher.material = new StandardMaterial("test", scene);
-    (shadowCatcher.material as StandardMaterial).diffuseColor = Color3.Green();
-    shadowCatcher.receiveShadows = true;
-    shadowCatcher.parent = root;
-
-    //! add test light
-    const directionalLight = new DirectionalLight("dirLight", new Vector3(1, -1, 1), scene);
-    const sg = new ShadowGenerator(512, directionalLight);
-    sg.addShadowCaster(scene.getMeshByName("frame"));
-
-    directionalLight.parent = root;
-
     root.rotationQuaternion = new Quaternion();
 
     //* create default experience helper
@@ -88,7 +70,10 @@ export async function setupXR(
     const featDomOverlay: WebXRDomOverlay = addDomOverlayFeature(featuresManager, domOverlayClass);
 
     //# add light estimation
-    const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager, scene);
+    const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager);
+
+    //# install shadow system
+    addShadowSystem(scene, root);
 
     return defaultXrExperienceHelper;
 }
@@ -97,17 +82,55 @@ function addDomOverlayFeature(featuresManager: WebXRFeaturesManager, element: st
     return featuresManager.enableFeature(WebXRDomOverlay, "latest", { element: element }) as WebXRDomOverlay;
 }
 
-function addLightEstimationFeature(featuresManager: WebXRFeaturesManager, scene: Scene): WebXRLightEstimation {
+function addShadowSystem(scene: Scene, rootNode: TransformNode) {
+    // const shadowGenerator = new ShadowGenerator(512, feature.directionalLight);
+    // shadowGenerator.useBlurExponentialShadowMap = true;
+    // shadowGenerator.setDarkness(0.1);
+    // shadowGenerator.getShadowMap().renderList.push(scene.getMeshByName("frame"));
+
+    // //! add shadowcatcher
+    // // const shadowCatcher = MeshBuilder.CreatePlane("shadowcatcher", { size: 5 }, scene);
+    // const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 5, depth: 3, height: 0.01 }, scene);
+    // // const shadowCatcher = MeshBuilder.CreatePlane("ground", { size: 4 }, scene);
+    // // shadowCatcher.rotation.x = Math.PI / 2;
+    // // shadowCatcher.material = new ShadowOnlyMaterial("shadowOnly", scene);
+    // shadowCatcher.material = new StandardMaterial("test", scene);
+    // (shadowCatcher.material as StandardMaterial).diffuseColor = Color3.Green();
+    // shadowCatcher.receiveShadows = true;
+    // shadowCatcher.parent = rootNode;
+
+    // //! add test light
+
+    // create light source
+    const directionalLight = new DirectionalLight("dirLight", new Vector3(1, -1, -1), scene);
+    directionalLight.parent = rootNode;
+
+    // get meshes that cast shadows
+    const frame = scene.getMeshByName("frame");
+    console.log(frame);
+
+    // create a shadow catcher
+    const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 2, depth: 1.5, height: 0.01 }, scene);
+    shadowCatcher.parent = rootNode;
+
+    // make light source a shadow generator
+    const sg = new ShadowGenerator(1024, directionalLight);
+    sg.useBlurExponentialShadowMap = true;
+    sg.setDarkness(0.01);
+
+    // ad shadow casters to shadow generator / light source
+    sg.addShadowCaster(frame);
+
+    // make shadow catcher receive shadows
+    shadowCatcher.receiveShadows = true;
+}
+
+function addLightEstimationFeature(featuresManager: WebXRFeaturesManager): WebXRLightEstimation {
     const feature = featuresManager.enableFeature(WebXRFeatureName.LIGHT_ESTIMATION, "latest", {
         createDirectionalLightSource: true,
         // disableCubeMapReflection: false,
         // setSceneEnvironmentTexture: true,
     }) as WebXRLightEstimation;
-
-    const shadowGenerator = new ShadowGenerator(512, feature.directionalLight);
-    shadowGenerator.useBlurExponentialShadowMap = true;
-    shadowGenerator.setDarkness(0.1);
-    shadowGenerator.getShadowMap().renderList.push(scene.getMeshByName("frame"));
 
     return feature;
 }
