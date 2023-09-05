@@ -70,10 +70,10 @@ export async function setupXR(
     const featDomOverlay: WebXRDomOverlay = addDomOverlayFeature(featuresManager, domOverlayClass);
 
     //# add light estimation
-    // const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager);
+    const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager);
 
     //# install shadow system
-    addShadowSystem(scene, root);
+    addShadowSystem(scene, root, lightEstimationFeature);
 
     return defaultXrExperienceHelper;
 }
@@ -82,7 +82,7 @@ function addDomOverlayFeature(featuresManager: WebXRFeaturesManager, element: st
     return featuresManager.enableFeature(WebXRDomOverlay, "latest", { element: element }) as WebXRDomOverlay;
 }
 
-function addShadowSystem(scene: Scene, rootNode: TransformNode) {
+function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEstimationFeature: WebXRLightEstimation) {
     // const shadowGenerator = new ShadowGenerator(512, feature.directionalLight);
     // shadowGenerator.useBlurExponentialShadowMap = true;
     // shadowGenerator.setDarkness(0.1);
@@ -102,8 +102,8 @@ function addShadowSystem(scene: Scene, rootNode: TransformNode) {
     // //! add test light
 
     // create light source
-    const directionalLight = new DirectionalLight("dirLight", new Vector3(1, -1, -1), scene);
-    directionalLight.parent = rootNode;
+    // const directionalLight = new DirectionalLight("dirLight", new Vector3(1, -1, -1), scene);
+    // directionalLight.parent = rootNode;
 
     // get meshes that cast shadows
     const frame = scene.getMeshByName("frame");
@@ -118,7 +118,7 @@ function addShadowSystem(scene: Scene, rootNode: TransformNode) {
     shadowCatcher.material = shadowCatcherMaterial;
 
     // make light source a shadow generator
-    const sg = new ShadowGenerator(512, directionalLight);
+    const sg = new ShadowGenerator(512, lightEstimationFeature.directionalLight);
     sg.useBlurExponentialShadowMap = true;
     // sg.setDarkness(0.7);
 
@@ -127,6 +127,8 @@ function addShadowSystem(scene: Scene, rootNode: TransformNode) {
 
     // make shadow catcher receive shadows
     shadowCatcher.receiveShadows = true;
+
+    // const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
 }
 
 function addLightEstimationFeature(featuresManager: WebXRFeaturesManager): WebXRLightEstimation {
