@@ -137,7 +137,7 @@ function addLightEstimationFeature(featuresManager: WebXRFeaturesManager): WebXR
         // setSceneEnvironmentTexture: true,
     }) as WebXRLightEstimation;
 
-    feature.onReflectionCubeMapUpdatedObservable.add((baseTexture, eventState) => {
+    feature.onReflectionCubeMapUpdatedObservable.add(() => {
         console.log(feature.directionalLight);
     });
 

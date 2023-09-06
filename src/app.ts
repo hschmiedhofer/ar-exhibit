@@ -23,7 +23,7 @@ async function start() {
     const domOverlayClassName = "dom-overlay-container";
 
     // create DOM overlay for AR viewer (buttons, text, etc.)
-    const elements = createArOverlay(scene, domOverlayClassName);
+    const elements = createArOverlay(domOverlayClassName);
 
     // set event listeners on overlay html elements (what does the button do, etc...)
     setupArInterface(elements, scene);

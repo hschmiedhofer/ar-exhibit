@@ -15,7 +15,7 @@ export function createCanvas() {
     return canvas;
 }
 
-export function createArOverlay(scene: Scene, domOverlayClass: string): ArDomElements {
+export function createArOverlay(domOverlayClass: string): ArDomElements {
     // Create the main container div
     const domOverlayContainer = document.createElement("div");
     domOverlayContainer.className = domOverlayClass;
