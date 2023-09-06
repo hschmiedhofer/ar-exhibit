@@ -89,6 +89,8 @@ export async function setupXR(
 }
 
 function addDomOverlayFeature(featuresManager: WebXRFeaturesManager, element: string): WebXRDomOverlay {
+    console.log(element);
+
     return featuresManager.enableFeature(WebXRDomOverlay, "latest", { element: element }) as WebXRDomOverlay;
 }
 
