@@ -89,8 +89,6 @@ export async function setupXR(
 }
 
 function addDomOverlayFeature(featuresManager: WebXRFeaturesManager, element: string): WebXRDomOverlay {
-    console.log(element);
-
     return featuresManager.enableFeature(WebXRDomOverlay, "latest", { element: element }) as WebXRDomOverlay;
 }
 
@@ -140,7 +138,8 @@ function addLightEstimationFeature(featuresManager: WebXRFeaturesManager): WebXR
     }) as WebXRLightEstimation;
 
     feature.onReflectionCubeMapUpdatedObservable.add(() => {
-        console.log(feature.directionalLight);
+        const dl = feature.directionalLight;
+        console.log(dl.direction.x, dl.direction.y, dl.direction.z);
     });
 
     return feature;
