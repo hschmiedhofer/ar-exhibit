@@ -1,5 +1,10 @@
 import { Scene } from "@babylonjs/core";
 
+export interface ArDomElements {
+    button: HTMLButtonElement;
+    statusText: HTMLParagraphElement;
+}
+
 export function createCanvas() {
     const canvas = document.createElement("canvas");
     canvas.style.width = "100%";
@@ -10,10 +15,7 @@ export function createCanvas() {
     return canvas;
 }
 
-export function createArOverlay(
-    scene: Scene,
-    domOverlayClass: string
-): { button: HTMLButtonElement; statusText: HTMLParagraphElement } {
+export function createArOverlay(scene: Scene, domOverlayClass: string): ArDomElements {
     // Create the main container div
     const domOverlayContainer = document.createElement("div");
     domOverlayContainer.className = domOverlayClass;
@@ -51,14 +53,17 @@ export function createArOverlay(
     // Append the main container to the body
     document.body.appendChild(domOverlayContainer);
 
-    swapButton.addEventListener("mouseover", function () {
-        swapButton.style.backgroundColor = "#45a049";
-    });
-    swapButton.addEventListener("mouseout", function () {
-        swapButton.style.backgroundColor = "#4CAF50";
-    });
+    return { button: swapButton, statusText: statusText };
+}
 
-    swapButton.addEventListener("click", function () {
+export function setupArInterface(elements: ArDomElements, scene: Scene) {
+    elements.button.addEventListener("mouseover", function () {
+        elements.button.style.backgroundColor = "#45a049";
+    });
+    elements.button.addEventListener("mouseout", function () {
+        elements.button.style.backgroundColor = "#4CAF50";
+    });
+    elements.button.addEventListener("click", function () {
         const painting = scene.getMeshByName("painting");
         const frame = scene.getMeshByName("frame");
         const spaceship = scene.getMeshByName("valkyrie_mesh");
@@ -66,6 +71,4 @@ export function createArOverlay(
         frame.isVisible = !frame.isVisible;
         spaceship.isVisible = !spaceship.isVisible;
     });
-
-    return { button: swapButton, statusText: statusText };
 }

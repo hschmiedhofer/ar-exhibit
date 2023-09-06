@@ -93,27 +93,10 @@ function addDomOverlayFeature(featuresManager: WebXRFeaturesManager, element: st
 }
 
 function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEstimationFeature?: WebXRLightEstimation) {
-    // const shadowGenerator = new ShadowGenerator(512, feature.directionalLight);
-    // shadowGenerator.useBlurExponentialShadowMap = true;
-    // shadowGenerator.setDarkness(0.1);
-    // shadowGenerator.getShadowMap().renderList.push(scene.getMeshByName("frame"));
-
-    // //! add shadowcatcher
-    // // const shadowCatcher = MeshBuilder.CreatePlane("shadowcatcher", { size: 5 }, scene);
-    // const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 5, depth: 3, height: 0.01 }, scene);
-    // // const shadowCatcher = MeshBuilder.CreatePlane("ground", { size: 4 }, scene);
-    // // shadowCatcher.rotation.x = Math.PI / 2;
-    // // shadowCatcher.material = new ShadowOnlyMaterial("shadowOnly", scene);
-    // shadowCatcher.material = new StandardMaterial("test", scene);
-    // (shadowCatcher.material as StandardMaterial).diffuseColor = Color3.Green();
-    // shadowCatcher.receiveShadows = true;
-    // shadowCatcher.parent = rootNode;
-
     // //! add test light
 
     // get meshes that cast shadows
     const frame = scene.getMeshByName("frame");
-    console.log(frame);
 
     // create a shadow catcher
     const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 2, depth: 1.5, height: 0.01 }, scene);
@@ -125,7 +108,7 @@ function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEstimationF
 
     // make light source a shadow generator
 
-    let directionalLight;
+    let directionalLight: DirectionalLight;
     if (!lightEstimationFeature) {
         // create light source
         directionalLight = new DirectionalLight("dirLight", new Vector3(1, -1, -1), scene);
@@ -145,8 +128,6 @@ function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEstimationF
 
     // make shadow catcher receive shadows
     shadowCatcher.receiveShadows = true;
-
-    // const light1: HemisphericLight = new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
 }
 
 function addLightEstimationFeature(featuresManager: WebXRFeaturesManager): WebXRLightEstimation {
@@ -155,6 +136,8 @@ function addLightEstimationFeature(featuresManager: WebXRFeaturesManager): WebXR
         // disableCubeMapReflection: false,
         // setSceneEnvironmentTexture: true,
     }) as WebXRLightEstimation;
+
+    // feature.onReflectionCubeMapUpdatedObservable.add((baseTexture, eventState) => {});
 
     return feature;
 }

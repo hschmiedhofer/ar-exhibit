@@ -5,7 +5,7 @@ import { setDebugLayerShortcut } from "./tools";
 import { setupStandardScene } from "./scene";
 import { setupXR } from "./xr";
 import { Engine, Scene } from "@babylonjs/core";
-import { createArOverlay, createCanvas } from "./canvas";
+import { setupArInterface, createArOverlay, createCanvas } from "./canvas";
 
 async function start() {
     // create the canvas html element and attach it to the webpage
@@ -24,6 +24,9 @@ async function start() {
 
     // create DOM overlay for AR viewer (buttons, text, etc.)
     const elements = createArOverlay(scene, domOverlayClassName);
+
+    // set event listeners on overlay html elements (what does the button do, etc...)
+    setupArInterface(elements, scene);
 
     // initialize babylon scene and engine
     await setupXR(scene, "painting-005.glb", "qr_hschmiedhofer_002.png", 0.18, domOverlayClassName);
