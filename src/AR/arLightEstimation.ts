@@ -31,6 +31,7 @@ export function addLightEstimationFeature(
     feature.onReflectionCubeMapUpdatedObservable.add(() => {
         const dl = feature.directionalLight;
         dl.parent = rootNode;
+        dl.range = 100;
         console.log(
             limitToNrOfDecimals(dl.direction.x, 1),
             limitToNrOfDecimals(dl.direction.y, 1),
