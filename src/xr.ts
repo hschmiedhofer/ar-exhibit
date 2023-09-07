@@ -5,23 +5,14 @@ import {
     TransformNode,
     SceneLoader,
     Quaternion,
-    WebXRFeatureName,
     WebXRImageTracking,
-    Axis,
-    Space,
     WebXRDomOverlay,
-    ShadowGenerator,
     WebXRLightEstimation,
-    MeshBuilder,
-    StandardMaterial,
-    Color3,
-    DirectionalLight,
     Vector3,
-    WebXRFeaturesManager,
-    IWebXRLightEstimationOptions,
 } from "@babylonjs/core";
-import { ShadowOnlyMaterial } from "@babylonjs/materials";
-import { limitToNrOfDecimals } from "./tools";
+import { addImageTrackingFeature } from "./AR/arImageTracking";
+import { addLightEstimationFeature, addShadowSystem } from "./AR/arLightEstimation";
+import { addDomOverlayFeature } from "./AR/arDomOverlay";
 
 export async function setupXR(
     scene: Scene,
@@ -85,100 +76,7 @@ export async function setupXR(
     const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager);
 
     //# install shadow system
-    addShadowSystem(scene, root);
+    addShadowSystem(scene, root, lightEstimationFeature);
 
     return defaultXrExperienceHelper;
-}
-
-function addDomOverlayFeature(featuresManager: WebXRFeaturesManager, element: string): WebXRDomOverlay {
-    return featuresManager.enableFeature(WebXRDomOverlay, "latest", { element: element }) as WebXRDomOverlay;
-}
-
-function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEstimationFeature?: WebXRLightEstimation) {
-    // //! add test light
-
-    // get meshes that cast shadows
-    const frame = scene.getMeshByName("frame");
-
-    // create a shadow catcher
-    const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 2, depth: 1.5, height: 0.01 }, scene);
-    shadowCatcher.parent = rootNode;
-
-    // create and apply shadow catcher material
-    const shadowCatcherMaterial = new ShadowOnlyMaterial("shadowOnlyMat", scene);
-    shadowCatcher.material = shadowCatcherMaterial;
-
-    // make light source a shadow generator
-
-    let directionalLight: DirectionalLight;
-    if (!lightEstimationFeature) {
-        // create light source
-        directionalLight = new DirectionalLight("dirLight", new Vector3(1, -1, -1), scene);
-        directionalLight.parent = rootNode;
-    } else {
-        directionalLight = lightEstimationFeature.directionalLight;
-    }
-
-    const sg = new ShadowGenerator(1024, directionalLight);
-    sg.useBlurExponentialShadowMap = true;
-    // sg.enableSoftTransparentShadow = true;
-    // sg.usePoissonSampling = true;
-    sg.setDarkness(0.6);
-
-    // ad shadow casters to shadow generator / light source
-    sg.addShadowCaster(frame);
-
-    // make shadow catcher receive shadows
-    shadowCatcher.receiveShadows = true;
-}
-
-function addLightEstimationFeature(featuresManager: WebXRFeaturesManager): WebXRLightEstimation {
-    const options: IWebXRLightEstimationOptions = {
-        createDirectionalLightSource: true,
-        // disableCubeMapReflection: false,
-        // setSceneEnvironmentTexture: true,
-    };
-    const feature = featuresManager.enableFeature(
-        WebXRFeatureName.LIGHT_ESTIMATION,
-        "latest",
-        options
-    ) as WebXRLightEstimation;
-
-    feature.onReflectionCubeMapUpdatedObservable.add(() => {
-        const dl = feature.directionalLight;
-        console.log(
-            limitToNrOfDecimals(dl.direction.x, 2),
-            limitToNrOfDecimals(dl.direction.y, 2),
-            limitToNrOfDecimals(dl.direction.z, 2)
-        );
-        console.log("intensity:", dl.intensity);
-        console.log("range:", dl.range);
-    });
-
-    return feature;
-}
-
-function addImageTrackingFeature(
-    featuresManager: WebXRFeaturesManager,
-    trackingImage: string,
-    estimatedWidth: number,
-    rootNode: TransformNode
-): WebXRImageTracking {
-    const feature = featuresManager.enableFeature(WebXRFeatureName.IMAGE_TRACKING, "latest", {
-        images: [
-            {
-                src: trackingImage,
-                estimatedRealWorldWidth: estimatedWidth,
-            },
-        ],
-    }) as WebXRImageTracking;
-
-    feature.onTrackedImageUpdatedObservable.add((image) => {
-        // root.setPreTransformMatrix(image.transformationMatrix);
-        image.transformationMatrix.decompose(rootNode.scaling, rootNode.rotationQuaternion, rootNode.position);
-        rootNode.setEnabled(true);
-        rootNode.translate(Axis.Y, 0.1, Space.LOCAL);
-    });
-
-    return feature;
 }
