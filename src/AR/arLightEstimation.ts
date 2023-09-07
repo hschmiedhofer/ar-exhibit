@@ -13,7 +13,10 @@ import {
 import { limitToNrOfDecimals } from "../tools";
 import { ShadowOnlyMaterial } from "@babylonjs/materials";
 
-export function addLightEstimationFeature(featuresManager: WebXRFeaturesManager): WebXRLightEstimation {
+export function addLightEstimationFeature(
+    featuresManager: WebXRFeaturesManager,
+    rootNode: TransformNode
+): WebXRLightEstimation {
     const options: IWebXRLightEstimationOptions = {
         createDirectionalLightSource: true,
         // disableCubeMapReflection: false,
@@ -27,10 +30,11 @@ export function addLightEstimationFeature(featuresManager: WebXRFeaturesManager)
 
     feature.onReflectionCubeMapUpdatedObservable.add(() => {
         const dl = feature.directionalLight;
+        dl.parent = rootNode;
         console.log(
-            limitToNrOfDecimals(dl.direction.x, 2),
-            limitToNrOfDecimals(dl.direction.y, 2),
-            limitToNrOfDecimals(dl.direction.z, 2)
+            limitToNrOfDecimals(dl.direction.x, 1),
+            limitToNrOfDecimals(dl.direction.y, 1),
+            limitToNrOfDecimals(dl.direction.z, 1)
         );
         console.log("intensity:", dl.intensity);
         console.log("range:", dl.range);
