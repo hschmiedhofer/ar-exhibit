@@ -14,3 +14,7 @@ export function setDebugLayerShortcut(scene: Scene, on: boolean) {
         }
     });
 }
+
+export function limitToNrOfDecimals(num: number, nrDecimals: number): number {
+    return parseFloat(num.toFixed(nrDecimals));
+}

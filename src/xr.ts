@@ -18,8 +18,10 @@ import {
     DirectionalLight,
     Vector3,
     WebXRFeaturesManager,
+    IWebXRLightEstimationOptions,
 } from "@babylonjs/core";
 import { ShadowOnlyMaterial } from "@babylonjs/materials";
+import { limitToNrOfDecimals } from "./tools";
 
 export async function setupXR(
     scene: Scene,
@@ -131,15 +133,26 @@ function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEstimationF
 }
 
 function addLightEstimationFeature(featuresManager: WebXRFeaturesManager): WebXRLightEstimation {
-    const feature = featuresManager.enableFeature(WebXRFeatureName.LIGHT_ESTIMATION, "latest", {
+    const options: IWebXRLightEstimationOptions = {
         createDirectionalLightSource: true,
         // disableCubeMapReflection: false,
         // setSceneEnvironmentTexture: true,
-    }) as WebXRLightEstimation;
+    };
+    const feature = featuresManager.enableFeature(
+        WebXRFeatureName.LIGHT_ESTIMATION,
+        "latest",
+        options
+    ) as WebXRLightEstimation;
 
     feature.onReflectionCubeMapUpdatedObservable.add(() => {
         const dl = feature.directionalLight;
-        console.log(dl.direction.x, dl.direction.y, dl.direction.z);
+        console.log(
+            limitToNrOfDecimals(dl.direction.x, 2),
+            limitToNrOfDecimals(dl.direction.y, 2),
+            limitToNrOfDecimals(dl.direction.z, 2)
+        );
+        console.log("intensity:", dl.intensity);
+        console.log("range:", dl.range);
     });
 
     return feature;
