@@ -10,12 +10,12 @@ import {
     WebXRFeaturesManager,
     WebXRLightEstimation,
 } from "@babylonjs/core";
-import { limitToNrOfDecimals } from "../tools";
 import { ShadowOnlyMaterial } from "@babylonjs/materials";
 
 export function addLightEstimationFeature(
     featuresManager: WebXRFeaturesManager,
-    rootNode: TransformNode
+    rootNode: TransformNode,
+    scene: Scene
 ): WebXRLightEstimation {
     const options: IWebXRLightEstimationOptions = {
         createDirectionalLightSource: true,
@@ -29,22 +29,39 @@ export function addLightEstimationFeature(
     ) as WebXRLightEstimation;
 
     feature.onReflectionCubeMapUpdatedObservable.add(() => {
-        const dl = feature.directionalLight;
-        dl.parent = rootNode;
-        dl.range = 100;
-        console.log(
-            limitToNrOfDecimals(dl.direction.x, 1),
-            limitToNrOfDecimals(dl.direction.y, 1),
-            limitToNrOfDecimals(dl.direction.z, 1)
-        );
-        console.log("intensity:", dl.intensity);
-        console.log("range:", dl.range);
+        const dlFromPhone = feature.directionalLight;
+
+        let dlFromScene = scene.getLightByName("dynDirLight");
+
+        if (dlFromScene) {
+            (dlFromScene as DirectionalLight).direction = new Vector3(
+                dlFromPhone.direction.x,
+                dlFromPhone.direction.y,
+                dlFromPhone.direction.z
+            );
+        } else {
+            dlFromScene = new DirectionalLight(
+                "dynDirLight",
+                new Vector3(dlFromPhone.direction.x, dlFromPhone.direction.y, dlFromPhone.direction.z),
+                scene
+            );
+            dlFromScene.parent = rootNode;
+        }
+        // dl.parent = rootNode;
+        // dl.range = 100;
+        // console.log(
+        //     limitToNrOfDecimals(dl.direction.x, 1),
+        //     limitToNrOfDecimals(dl.direction.y, 1),
+        //     limitToNrOfDecimals(dl.direction.z, 1)
+        // );
+        // console.log("intensity:", dl.intensity);
+        // console.log("range:", dl.range);
     });
 
     return feature;
 }
 
-export function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEstimationFeature?: WebXRLightEstimation) {
+export function addShadowSystem(scene: Scene, rootNode: TransformNode, lightName?: string) {
     // //! add test light
 
     // get meshes that cast shadows
@@ -61,12 +78,12 @@ export function addShadowSystem(scene: Scene, rootNode: TransformNode, lightEsti
     // make light source a shadow generator
 
     let directionalLight: DirectionalLight;
-    if (!lightEstimationFeature) {
+    if (!lightName) {
         // create light source
-        directionalLight = new DirectionalLight("dirLight", new Vector3(1, -1, -1), scene);
+        directionalLight = new DirectionalLight("dynDirLight", new Vector3(1, -1, -1), scene);
         directionalLight.parent = rootNode;
     } else {
-        directionalLight = lightEstimationFeature.directionalLight;
+        directionalLight = scene.getLightByName(lightName) as DirectionalLight;
     }
 
     const sg = new ShadowGenerator(1024, directionalLight);

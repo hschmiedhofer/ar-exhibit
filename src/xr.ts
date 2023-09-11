@@ -73,10 +73,10 @@ export async function setupXR(
     const featDomOverlay: WebXRDomOverlay = addDomOverlayFeature(featuresManager, domOverlayClass);
 
     //# add light estimation
-    const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager, root);
+    const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager, root, scene);
 
     //# install shadow system
-    addShadowSystem(scene, root, lightEstimationFeature);
+    addShadowSystem(scene, root, "dynDirLight");
     // addShadowSystem(scene, root);
 
     return defaultXrExperienceHelper;
