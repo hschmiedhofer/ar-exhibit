@@ -9,6 +9,7 @@ import {
     WebXRDomOverlay,
     WebXRLightEstimation,
     Vector3,
+    DirectionalLight,
 } from "@babylonjs/core";
 import { addImageTrackingFeature } from "./AR/arImageTracking";
 import { addLightEstimationFeature, addShadowSystem } from "./AR/arLightEstimation";
@@ -53,6 +54,8 @@ export async function setupXR(
         }
     });
 
+    addShadowSystem(scene, root, "dynDirLight", scene.getMeshById("frame"));
+
     root.rotationQuaternion = new Quaternion();
 
     //* create default experience helper
@@ -73,11 +76,10 @@ export async function setupXR(
     const featDomOverlay: WebXRDomOverlay = addDomOverlayFeature(featuresManager, domOverlayClass);
 
     //# add light estimation
-    const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(featuresManager, root, scene);
-
-    //# install shadow system
-    addShadowSystem(scene, root, "dynDirLight");
-    // addShadowSystem(scene, root);
+    const lightEstimationFeature: WebXRLightEstimation = addLightEstimationFeature(
+        featuresManager,
+        scene.getLightByName("dynDirLight") as DirectionalLight
+    );
 
     return defaultXrExperienceHelper;
 }

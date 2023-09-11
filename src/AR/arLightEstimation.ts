@@ -1,6 +1,8 @@
 import {
+    AbstractMesh,
     DirectionalLight,
     IWebXRLightEstimationOptions,
+    Mesh,
     MeshBuilder,
     Scene,
     ShadowGenerator,
@@ -14,8 +16,7 @@ import { ShadowOnlyMaterial } from "@babylonjs/materials";
 
 export function addLightEstimationFeature(
     featuresManager: WebXRFeaturesManager,
-    rootNode: TransformNode,
-    scene: Scene
+    dirLightOnScene: DirectionalLight
 ): WebXRLightEstimation {
     const options: IWebXRLightEstimationOptions = {
         createDirectionalLightSource: true,
@@ -28,25 +29,16 @@ export function addLightEstimationFeature(
         options
     ) as WebXRLightEstimation;
 
+    // as soon as we get an update from the system...
     feature.onReflectionCubeMapUpdatedObservable.add(() => {
         const dlFromPhone = feature.directionalLight;
 
-        let dlFromScene = scene.getLightByName("dynDirLight");
+        dirLightOnScene.direction = new Vector3(
+            dlFromPhone.direction.x,
+            dlFromPhone.direction.y,
+            dlFromPhone.direction.z
+        );
 
-        if (dlFromScene) {
-            (dlFromScene as DirectionalLight).direction = new Vector3(
-                dlFromPhone.direction.x,
-                dlFromPhone.direction.y,
-                dlFromPhone.direction.z
-            );
-        } else {
-            dlFromScene = new DirectionalLight(
-                "dynDirLight",
-                new Vector3(dlFromPhone.direction.x, dlFromPhone.direction.y, dlFromPhone.direction.z),
-                scene
-            );
-            dlFromScene.parent = rootNode;
-        }
         // dl.parent = rootNode;
         // dl.range = 100;
         // console.log(
@@ -61,12 +53,12 @@ export function addLightEstimationFeature(
     return feature;
 }
 
-export function addShadowSystem(scene: Scene, rootNode: TransformNode, lightName?: string) {
-    // //! add test light
-
-    // get meshes that cast shadows
-    const frame = scene.getMeshByName("frame");
-
+export function addShadowSystem(
+    scene: Scene,
+    rootNode: TransformNode,
+    dirLightName: string,
+    shadowCasters: AbstractMesh
+) {
     // create a shadow catcher
     const shadowCatcher = MeshBuilder.CreateBox("shadowcatcher", { width: 2, depth: 1.5, height: 0.01 }, scene);
     shadowCatcher.parent = rootNode;
@@ -77,14 +69,9 @@ export function addShadowSystem(scene: Scene, rootNode: TransformNode, lightName
 
     // make light source a shadow generator
 
-    let directionalLight: DirectionalLight;
-    if (!lightName) {
-        // create light source
-        directionalLight = new DirectionalLight("dynDirLight", new Vector3(1, -1, -1), scene);
-        directionalLight.parent = rootNode;
-    } else {
-        directionalLight = scene.getLightByName(lightName) as DirectionalLight;
-    }
+    // create light source
+    const directionalLight = new DirectionalLight(dirLightName, new Vector3(1, -1, -1), scene);
+    directionalLight.parent = rootNode;
 
     const sg = new ShadowGenerator(1024, directionalLight);
     sg.useBlurExponentialShadowMap = true;
@@ -93,7 +80,7 @@ export function addShadowSystem(scene: Scene, rootNode: TransformNode, lightName
     sg.setDarkness(0.6);
 
     // ad shadow casters to shadow generator / light source
-    sg.addShadowCaster(frame);
+    sg.addShadowCaster(shadowCasters);
 
     // make shadow catcher receive shadows
     shadowCatcher.receiveShadows = true;
